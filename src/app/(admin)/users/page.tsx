@@ -49,7 +49,7 @@ function UserRow({
   const isSuspended = user.status === "suspended";
 
   async function changeTier(newTier: string) {
-    setTierValue(newTier);
+    setTierValue(newTier as "free" | "pro" | "team" | "enterprise");
     if (newTier === user.tier) return;
     setBusy(true);
     setError(null);
