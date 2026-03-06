@@ -66,9 +66,11 @@ function Section({ title, children, collapsible = false }: {
     <div className="panel overflow-hidden">
       <div
         className="flex items-center justify-between px-5 py-3"
-        style={{ borderBottom: open ? "1px solid var(--border)" : "none" }}
+        style={{ 
+          cursor: collapsible ? "pointer" : "default", 
+          borderBottom: open ? "1px solid var(--border)" : "none" 
+        }}
         onClick={collapsible ? () => setOpen(o => !o) : undefined}
-        style2={{ cursor: collapsible ? "pointer" : "default", borderBottom: open ? "1px solid var(--border)" : "none" }}
       >
         <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--text-3)" }}>
           {title}
