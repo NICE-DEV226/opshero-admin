@@ -5,6 +5,8 @@ const PUBLIC_PATHS = ["/login", "/totp", "/_next", "/favicon"];
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  console.log(`[Middleware] ${pathname}`);
+
   // Allow public paths
   if (PUBLIC_PATHS.some(p => pathname.startsWith(p))) {
     return NextResponse.next();
@@ -13,9 +15,12 @@ export function middleware(req: NextRequest) {
   // Check for admin session cookie
   const token = req.cookies.get("admin_token")?.value;
 
+  console.log(`[Middleware] Token present: ${!!token}`);
+
   if (!token || token.trim() === "") {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("next", pathname);
+    console.log(`[Middleware] Redirecting to login`);
     return NextResponse.redirect(loginUrl);
   }
 
