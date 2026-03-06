@@ -156,14 +156,16 @@ export default function ContributionsPage() {
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <a
-                        href={c.pr_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn-ghost btn-sm text-xs"
-                      >
-                        GitHub ↗
-                      </a>
+                      {c.pr_url && (
+                        <a
+                          href={c.pr_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-ghost btn-sm text-xs"
+                        >
+                          GitHub ↗
+                        </a>
+                      )}
                       <Link href={`/contributions/${c.id ?? c.pr_number}`} className="btn-primary btn-sm">
                         Review
                       </Link>
