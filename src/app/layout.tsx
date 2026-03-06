@@ -5,6 +5,11 @@ export const metadata: Metadata = {
   title: { default: "Admin — OpsHero", template: "%s — OpsHero Admin" },
   description: "OpsHero internal administration panel",
   robots: { index: false, follow: false },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
