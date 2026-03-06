@@ -13,13 +13,14 @@ export function middleware(req: NextRequest) {
   // Check for admin session cookie
   const token = req.cookies.get("admin_token")?.value;
 
-  if (!token) {
+  if (!token || token.trim() === "") {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("next", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // Token presence is verified here; full JWT validation happens in API routes
+  // Note: Full JWT validation with backend happens in API routes
   return NextResponse.next();
 }
 
