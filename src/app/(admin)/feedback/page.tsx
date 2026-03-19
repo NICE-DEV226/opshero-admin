@@ -10,7 +10,7 @@ import {
 import {
   Lightbulb, Bug, TrendingUp, HelpCircle,
   MessageSquare, CheckCircle, AlertTriangle,
-  Clock, Send, Trash2, Filter,
+  Clock, Send, Trash2, Filter, Bell,
 } from "lucide-react";
 
 // ── Config ───────────────────────────────────────────────────────────────────
@@ -316,17 +316,51 @@ export default function AdminFeedbackPage() {
             </div>
 
             {/* Description */}
-            <div
-              className="p-3 rounded-xl text-sm whitespace-pre-wrap"
-              style={{ background: "var(--surface-2)", color: "var(--text-2)", border: "1px solid var(--border)" }}
-            >
-              {selected.description}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold" style={{ color: "var(--text-2)" }}>
+                Full Description
+              </label>
+              <div
+                className="p-4 rounded-xl text-sm whitespace-pre-wrap max-h-64 overflow-y-auto"
+                style={{ 
+                  background: "var(--surface-2)", 
+                  color: "var(--text-2)", 
+                  border: "1px solid var(--border)",
+                  lineHeight: "1.5"
+                }}
+              >
+                {selected.description}
+              </div>
             </div>
 
             {selected.url_or_page && (
               <div className="text-xs" style={{ color: "var(--text-3)" }}>
                 <span className="font-semibold">Page: </span>
                 <span style={{ color: "var(--text-2)" }}>{selected.url_or_page}</span>
+              </div>
+            )}
+
+            {/* Show existing admin reply if any */}
+            {selected.admin_reply && (
+              <div className="space-y-2">
+                <label className="text-xs font-semibold" style={{ color: "var(--text-2)" }}>
+                  Previous Admin Reply
+                  {selected.admin_replied_by && (
+                    <span className="font-normal ml-1" style={{ color: "var(--text-3)" }}>
+                      by {selected.admin_replied_by}
+                    </span>
+                  )}
+                </label>
+                <div
+                  className="p-3 rounded-xl text-sm whitespace-pre-wrap"
+                  style={{ 
+                    background: "rgba(0,255,135,0.05)", 
+                    color: "var(--text-2)", 
+                    border: "1px solid rgba(0,255,135,0.2)" 
+                  }}
+                >
+                  {selected.admin_reply}
+                </div>
               </div>
             )}
 
@@ -345,23 +379,35 @@ export default function AdminFeedbackPage() {
             </div>
 
             {/* Admin reply */}
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <label className="text-xs font-semibold" style={{ color: "var(--text-2)" }}>
-                Reply to user <span className="font-normal" style={{ color: "var(--text-3)" }}>(optional)</span>
+                Reply to @{selected.author_github}
+                <span className="font-normal ml-1" style={{ color: "var(--text-3)" }}>
+                  (User will be notified)
+                </span>
               </label>
               <textarea
                 value={editReply}
                 onChange={e => setEditReply(e.target.value)}
-                placeholder="Leave a note — it'll be shown to the user in their My Submissions view…"
-                rows={4}
+                placeholder={`Write a response to @${selected.author_github}. They will receive a notification with your reply.`}
+                rows={5}
                 className="input w-full text-sm resize-none"
+                style={{ minHeight: "120px" }}
               />
+              {editReply.trim() && (
+                <div className="text-xs" style={{ color: "var(--text-3)" }}>
+                  <span className="font-semibold">Preview:</span> User will see this reply in their feedback submissions.
+                </div>
+              )}
             </div>
 
             {/* Feedback */}
             {saveMsg && (
               <div className="flex items-center gap-2 text-sm" style={{ color: "#4ade80" }}>
                 <CheckCircle className="w-4 h-4" /> {saveMsg}
+                <span className="text-xs" style={{ color: "var(--text-3)" }}>
+                  • User has been notified
+                </span>
               </div>
             )}
             {saveError && (
@@ -369,6 +415,26 @@ export default function AdminFeedbackPage() {
                 <AlertTriangle className="w-4 h-4" /> {saveError}
               </div>
             )}
+
+            {/* Notification info */}
+            <div 
+              className="p-3 rounded-lg text-xs"
+              style={{ 
+                background: "rgba(0,212,255,0.05)", 
+                border: "1px solid rgba(0,212,255,0.1)",
+                color: "var(--text-3)"
+              }}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <Bell className="w-3 h-3" style={{ color: "var(--cyan)" }} />
+                <span className="font-semibold" style={{ color: "var(--text-2)" }}>Notification System</span>
+              </div>
+              <ul className="space-y-1 ml-5">
+                <li>• User receives notification when you reply or change status to "Planned" or "Done"</li>
+                <li>• Admins are notified when new feedback is submitted</li>
+                <li>• All notifications appear in the user's dashboard</li>
+              </ul>
+            </div>
 
             <button
               onClick={saveItem}
@@ -380,7 +446,12 @@ export default function AdminFeedbackPage() {
                     style={{ borderColor: "rgba(255,255,255,0.3)", borderTopColor: "#fff" }} />
                 : <Send className="w-4 h-4" />
               }
-              {saving ? "Saving…" : "Save & reply"}
+              {saving 
+                ? "Saving & Notifying User..." 
+                : editReply.trim() 
+                  ? "Save & Send Reply" 
+                  : "Save Status Change"
+              }
             </button>
           </div>
         ) : (

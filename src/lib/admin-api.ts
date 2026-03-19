@@ -556,21 +556,21 @@ export interface FeedbackStats {
 }
 
 export const feedbackHubApi = {
-  getStats: () => api.get<FeedbackStats>("/feedback-hub/stats"),
+  getStats: () => api.get<FeedbackStats>("/admin/feedback-hub/stats"),
 
   list: (params: Record<string, string | number> = {}) => {
     const qs = new URLSearchParams(
       Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     );
-    return api.get<FeedbackListResponse>(`/feedback-hub?${qs}`);
+    return api.get<FeedbackListResponse>(`/admin/feedback-hub?${qs}`);
   },
 
-  get: (id: string) => api.get<AdminFeedback>(`/feedback-hub/${id}`),
+  get: (id: string) => api.get<AdminFeedback>(`/admin/feedback-hub/${id}`),
 
   update: (id: string, data: { status?: string; admin_reply?: string }) =>
-    api.patch<{ message: string }>(`/feedback-hub/${id}`, data),
+    api.patch<{ message: string }>(`/admin/feedback-hub/${id}`, data),
 
-  delete: (id: string) => api.del(`/feedback-hub/${id}`),
+  delete: (id: string) => api.del(`/admin/feedback-hub/${id}`),
 };
 
 // ── Billing endpoints ──────────────────────────────────────────────────────
@@ -594,6 +594,49 @@ export const billingApi = {
 
   sendRecoveryEmails: () => api.post("/billing/recovery-emails"),
 };
+
+// ── Notifications ──────────────────────────────────────────────────────────────
+
+export interface NotificationStats {
+  total_notifications: number;
+  total_unread: number;
+  by_type: Array<{
+    _id: string;
+    count: number;
+    unread_count: number;
+  }>;
+  recent_notifications: Array<{
+    user_id: string;
+    type: string;
+    title: string;
+    created_at: string;
+    read: boolean;
+  }>;
+}
+
+export interface SystemNotificationRequest {
+  title: string;
+  message: string;
+  type: string;
+  target_tiers: string[];
+  expires_hours?: number;
+}
+
+export async function getNotificationStats(): Promise<NotificationStats> {
+  return adminFetch<NotificationStats>("/admin/notifications/stats");
+}
+
+export async function sendSystemNotification(data: SystemNotificationRequest): Promise<{
+  ok: boolean;
+  notifications_sent: number;
+  target_users: number;
+  message: string;
+}> {
+  return adminFetch("/admin/notifications/system", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
 
 // ── Learning / Auto-promote endpoints ──────────────────────────────────────
 
