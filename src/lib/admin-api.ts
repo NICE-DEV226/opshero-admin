@@ -126,14 +126,14 @@ export interface TotpVerifyResponse {
 
 export const authApi = {
   login: (email: string, password: string) =>
-    api.post<LoginResponse>("/auth/login", { email, password }),
+    api.post<LoginResponse>("auth/login", { email, password }),
 
   totpVerify: (pending_token: string, totp_code: string) =>
-    api.post<TotpVerifyResponse>("/auth/totp-verify", { pending_token, totp_code }),
+    api.post<TotpVerifyResponse>("auth/totp-verify", { pending_token, totp_code }),
 
-  logout: () => api.post<void>("/auth/logout"),
+  logout: () => api.post<void>("auth/logout"),
 
-  refresh: () => api.post<TotpVerifyResponse>("/auth/refresh"),
+  refresh: () => api.post<TotpVerifyResponse>("auth/refresh"),
 };
 
 // ── Dashboard endpoints ────────────────────────────────────────────────────
@@ -163,7 +163,7 @@ export interface ActivityItem {
 }
 
 export const dashboardApi = {
-  getMetrics: () => api.get<DashboardMetrics>("/dashboard/metrics"),
+  getMetrics: () => api.get<DashboardMetrics>("dashboard/metrics"),
 };
 
 // ── Patterns endpoints ─────────────────────────────────────────────────────
@@ -207,30 +207,30 @@ export const patternsApi = {
     Object.entries(filters).forEach(([k, v]) => {
       if (v !== undefined && v !== "") params.set(k, String(v));
     });
-    return api.get<PatternListResponse>(`/patterns?${params}`);
+    return api.get<PatternListResponse>(`patterns?${params}`);
   },
 
-  get: (id: string) => api.get<AdminPattern>(`/patterns/${id}`),
+  get: (id: string) => api.get<AdminPattern>(`patterns/${id}`),
 
   create: (data: Record<string, unknown>) =>
-    api.post<AdminPattern>("/patterns", data),
+    api.post<AdminPattern>("patterns", data),
 
   update: (id: string, data: Record<string, unknown>, bump?: string) =>
-    api.put(`/patterns/${id}`, { pattern_data: data, bump: bump ?? "patch" }),
+    api.put(`patterns/${id}`, { pattern_data: data, bump: bump ?? "patch" }),
 
-  disable: (id: string) => api.del(`/patterns/${id}`),
+  disable: (id: string) => api.del(`patterns/${id}`),
 
   rollback: (id: string, version: string) =>
-    api.post(`/patterns/${id}/rollback/${version}`),
+    api.post(`patterns/${id}/rollback/${version}`),
 
   getStats: (id: string, days = 30) =>
-    api.get(`/patterns/${id}/stats?days=${days}`),
+    api.get(`patterns/${id}/stats?days=${days}`),
 
-  getHistory: (id: string) => api.get(`/patterns/${id}/history`),
+  getHistory: (id: string) => api.get(`patterns/${id}/history`),
 
   test: (pattern_data: Record<string, unknown>, log_text: string) =>
     api.post<{ matched: boolean; confidence: number; extracted_vars: Record<string, string> }>(
-      "/patterns/test",
+      "patterns/test",
       { pattern_data, log_text },
     ),
 };
@@ -262,31 +262,31 @@ export const usersApi = {
     const qs = new URLSearchParams(
       Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     );
-    return api.get<UserListResponse>(`/users?${qs}`);
+    return api.get<UserListResponse>(`users?${qs}`);
   },
 
-  get: (userId: string) => api.get<AdminUser>(`/users/${userId}`),
+  get: (userId: string) => api.get<AdminUser>(`users/${userId}`),
 
   changeTier: (userId: string, tier: string) =>
-    api.patch(`/users/${userId}/tier`, { tier }),
+    api.patch(`users/${userId}/tier`, { tier }),
 
   suspend: (userId: string, reason: string) =>
-    api.post(`/users/${userId}/suspend`, { reason }),
+    api.post(`users/${userId}/suspend`, { reason }),
 
-  activate: (userId: string) => api.post(`/users/${userId}/activate`),
+  activate: (userId: string) => api.post(`users/${userId}/activate`),
 
   fetchEmail: (userId: string) =>
     api.post<{ message: string; email?: string; email_updated: boolean }>(
-      `/users/${userId}/fetch-email`
+      `users/${userId}/fetch-email`
     ),
 
   exportGdpr: (userId: string) =>
-    api.get<Record<string, unknown>>(`/users/${userId}/export`),
+    api.get<Record<string, unknown>>(`users/${userId}/export`),
 
-  delete: (userId: string) => api.del(`/users/${userId}`),
+  delete: (userId: string) => api.del(`users/${userId}`),
 
   setQuota: (userId: string, monthly_limit: number | null) =>
-    api.patch<{ message: string }>(`/users/${userId}/quota`, { monthly_limit }),
+    api.patch<{ message: string }>(`users/${userId}/quota`, { monthly_limit }),
 };
 
 // ── Contributions endpoints ────────────────────────────────────────────────
@@ -326,24 +326,24 @@ export const contributionsApi = {
   list: (status?: string, page = 1, pageSize = 50) => {
     const qs = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
     if (status) qs.set("status", status);
-    return api.get<ContributionListResponse>(`/contributions/?${qs}`);
+    return api.get<ContributionListResponse>(`contributions/?${qs}`);
   },
 
-  getStats: () => api.get<{ by_status: Record<string, number>; by_type: Record<string, number>; total: number }>("/contributions/stats"),
+  getStats: () => api.get<{ by_status: Record<string, number>; by_type: Record<string, number>; total: number }>("contributions/stats"),
 
-  get: (id: string) => api.get<Contribution>(`/contributions/${id}`),
+  get: (id: string) => api.get<Contribution>(`contributions/${id}`),
 
   approve: (id: string, notes?: string) =>
-    api.post<{ message: string }>(`/contributions/${id}/approve`, { notes }),
+    api.post<{ message: string }>(`contributions/${id}/approve`, { notes }),
 
   reject: (id: string, reason: string) =>
-    api.post<{ message: string }>(`/contributions/${id}/reject`, { reason }),
+    api.post<{ message: string }>(`contributions/${id}/reject`, { reason }),
 
   requestChanges: (id: string, message: string) =>
-    api.post<{ message: string }>(`/contributions/${id}/request-changes`, { message }),
+    api.post<{ message: string }>(`contributions/${id}/request-changes`, { message }),
 
   promote: (id: string) =>
-    api.post<{ message: string; patterns: string[]; promoted_by: string }>(`/contributions/${id}/promote`),
+    api.post<{ message: string; patterns: string[]; promoted_by: string }>(`contributions/${id}/promote`),
 };
 
 // ── LLM / Groq endpoints ───────────────────────────────────────────────────
@@ -378,15 +378,15 @@ export interface LLMConfig {
 
 export const llmApi = {
   getCosts: (period: "today" | "7d" | "30d" = "30d") =>
-    api.get<LLMCosts>(`/groq/costs?period=${period}`),
+    api.get<LLMCosts>(`groq/costs?period=${period}`),
 
-  getConfig: () => api.get<LLMConfig>("/groq/config"),
+  getConfig: () => api.get<LLMConfig>("groq/config"),
 
   updateConfig: (data: Partial<Omit<LLMConfig, "groq_api_key_set">>) =>
-    api.put<{ message: string; updated: string[] }>("/groq/config", data),
+    api.put<{ message: string; updated: string[] }>("groq/config", data),
 
   updateApiKey: (api_key: string) =>
-    api.put<{ message: string }>("/groq/api-key", { api_key }),
+    api.put<{ message: string }>("groq/api-key", { api_key }),
 };
 
 // ── Audit log endpoints ────────────────────────────────────────────────────
@@ -416,10 +416,10 @@ export const auditApi = {
     const qs = new URLSearchParams(
       Object.fromEntries(Object.entries(filters).map(([k, v]) => [k, String(v)])),
     );
-    return api.get<AuditLogsResponse>(`/audit/logs?${qs}`);
+    return api.get<AuditLogsResponse>(`audit/logs?${qs}`);
   },
 
-  getAlerts: () => api.get<unknown[]>("/audit/alerts"),
+  getAlerts: () => api.get<unknown[]>("audit/alerts"),
 };
 
 // ── Config endpoints ───────────────────────────────────────────────────────
@@ -434,10 +434,10 @@ export interface ConfigEntry {
 }
 
 export const configApi = {
-  getAll: () => api.get<ConfigEntry[]>("/config"),
-  get: (key: string) => api.get<ConfigEntry>(`/config/${key}`),
-  set: (key: string, value: unknown) => api.put(`/config/${key}`, { value }),
-  reload: () => api.post("/config/reload"),
+  getAll: () => api.get<ConfigEntry[]>("config"),
+  get: (key: string) => api.get<ConfigEntry>(`config/${key}`),
+  set: (key: string, value: unknown) => api.put(`config/${key}`, { value }),
+  reload: () => api.post("config/reload"),
 };
 
 // ── Announcements endpoints ────────────────────────────────────────────────
@@ -457,11 +457,11 @@ export interface Announcement {
 }
 
 export const announcementsApi = {
-  list: () => api.get<Announcement[]>("/announcements"),
-  create: (data: Omit<Announcement, "id">) => api.post<Announcement>("/announcements", data),
+  list: () => api.get<Announcement[]>("announcements"),
+  create: (data: Omit<Announcement, "id">) => api.post<Announcement>("announcements", data),
   update: (id: string, data: Partial<Announcement>) =>
-    api.put<Announcement>(`/announcements/${id}`, data),
-  delete: (id: string) => api.del(`/announcements/${id}`),
+    api.put<Announcement>(`announcements/${id}`, data),
+  delete: (id: string) => api.del(`announcements/${id}`),
 };
 
 // ── Email endpoints ────────────────────────────────────────────────────────
@@ -502,7 +502,7 @@ export interface EmailStats {
 }
 
 export const emailApi = {
-  getTemplates: () => api.get<EmailTemplate[]>("/email/templates"),
+  getTemplates: () => api.get<EmailTemplate[]>("email/templates"),
 
   previewUrl: (
     template: string,
@@ -515,12 +515,12 @@ export const emailApi = {
   },
 
   send: (req: EmailSendRequest) =>
-    api.post<EmailSendResult>("/email/send", req),
+    api.post<EmailSendResult>("email/send", req),
 
   broadcast: (req: EmailBroadcastRequest) =>
-    api.post<{ message: string; recipient_count: number; segment: string }>("/email/broadcast", req),
+    api.post<{ message: string; recipient_count: number; segment: string }>("email/broadcast", req),
 
-  getStats: () => api.get<EmailStats>("/email/stats"),
+  getStats: () => api.get<EmailStats>("email/stats"),
 };
 
 // ── Feedback Hub (admin) endpoints ────────────────────────────────────────────
@@ -558,21 +558,21 @@ export interface FeedbackStats {
 }
 
 export const feedbackHubApi = {
-  getStats: () => api.get<FeedbackStats>("/admin/feedback-hub/stats"),
+  getStats: () => api.get<FeedbackStats>("feedback-hub/stats"),
 
   list: (params: Record<string, string | number> = {}) => {
     const qs = new URLSearchParams(
       Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     );
-    return api.get<FeedbackListResponse>(`/admin/feedback-hub?${qs}`);
+    return api.get<FeedbackListResponse>(`feedback-hub?${qs}`);
   },
 
-  get: (id: string) => api.get<AdminFeedback>(`/admin/feedback-hub/${id}`),
+  get: (id: string) => api.get<AdminFeedback>(`feedback-hub/${id}`),
 
   update: (id: string, data: { status?: string; admin_reply?: string }) =>
-    api.patch<{ message: string }>(`/admin/feedback-hub/${id}`, data),
+    api.patch<{ message: string }>(`feedback-hub/${id}`, data),
 
-  delete: (id: string) => api.del(`/admin/feedback-hub/${id}`),
+  delete: (id: string) => api.del(`feedback-hub/${id}`),
 };
 
 // ── Billing endpoints ──────────────────────────────────────────────────────
@@ -588,13 +588,13 @@ export interface BillingRevenue {
 
 export const billingApi = {
   getRevenue: (period?: string) =>
-    api.get<BillingRevenue>(`/billing/revenue${period ? `?period=${period}` : ""}`),
+    api.get<BillingRevenue>(`billing/revenue${period ? `?period=${period}` : ""}`),
 
-  getTransactions: () => api.get<unknown[]>("/billing/transactions"),
+  getTransactions: () => api.get<unknown[]>("billing/transactions"),
 
-  getFailedPayments: () => api.get<unknown[]>("/billing/failed"),
+  getFailedPayments: () => api.get<unknown[]>("billing/failed"),
 
-  sendRecoveryEmails: () => api.post("/billing/recovery-emails"),
+  sendRecoveryEmails: () => api.post("billing/recovery-emails"),
 };
 
 // ── Notifications ──────────────────────────────────────────────────────────────
@@ -625,7 +625,7 @@ export interface SystemNotificationRequest {
 }
 
 export async function getNotificationStats(): Promise<NotificationStats> {
-  return adminFetch<NotificationStats>("/admin/notifications/stats");
+  return adminFetch<NotificationStats>("notifications/stats");
 }
 
 export async function sendSystemNotification(data: SystemNotificationRequest): Promise<{
@@ -634,7 +634,7 @@ export async function sendSystemNotification(data: SystemNotificationRequest): P
   target_users: number;
   message: string;
 }> {
-  return adminFetch("/admin/notifications/system", {
+  return adminFetch("notifications/system", {
     method: "POST",
     body: JSON.stringify(data),
   });
@@ -740,51 +740,51 @@ export interface LearningJobsResponse {
 
 export const learningApi = {
   getStats: () =>
-    api.get<LearningStats>("/learning/stats"),
+    api.get<LearningStats>("learning/stats"),
 
   listCandidates: (status?: string, page = 1, pageSize = 50) => {
     const qs = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
     if (status) qs.set("status", status);
-    return api.get<CandidateListResponse>(`/learning/candidates?${qs}`);
+    return api.get<CandidateListResponse>(`learning/candidates?${qs}`);
   },
 
   getCandidate: (id: string) =>
-    api.get<LearningCandidate>(`/learning/candidates/${id}`),
+    api.get<LearningCandidate>(`learning/candidates/${id}`),
 
   updateCandidate: (id: string, data: { pattern_data?: Record<string, unknown>; notes?: string }) =>
-    api.patch<{ message: string }>(`/learning/candidates/${id}`, data),
+    api.patch<{ message: string }>(`learning/candidates/${id}`, data),
 
   approve: (id: string) =>
-    api.post<{ message: string }>(`/learning/candidates/${id}/approve`),
+    api.post<{ message: string }>(`learning/candidates/${id}/approve`),
 
   promote: (id: string) =>
     api.post<{ message: string; pattern_id: string; promoted_by: string }>(
-      `/learning/candidates/${id}/promote`,
+      `learning/candidates/${id}/promote`,
     ),
 
   reject: (id: string) =>
-    api.post<{ message: string }>(`/learning/candidates/${id}/reject`),
+    api.post<{ message: string }>(`learning/candidates/${id}/reject`),
 
   generatePattern: (id: string) =>
-    api.post<GeneratePatternResult>(`/learning/candidates/${id}/generate-pattern`),
+    api.post<GeneratePatternResult>(`learning/candidates/${id}/generate-pattern`),
 
   validateRegex: (id: string) =>
-    api.get<ValidateRegexResult>(`/learning/candidates/${id}/validate-regex`),
+    api.get<ValidateRegexResult>(`learning/candidates/${id}/validate-regex`),
 
   listJobs: (jobType?: string, page = 1, pageSize = 30) => {
     const qs = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
     if (jobType) qs.set("type", jobType);
-    return api.get<LearningJobsResponse>(`/learning/jobs?${qs}`);
+    return api.get<LearningJobsResponse>(`learning/jobs?${qs}`);
   },
 
   triggerAutoPromote: () =>
     api.post<{ message: string; job_id: string; triggered_by: string }>(
-      "/learning/trigger-auto-promote",
+      "learning/trigger-auto-promote",
     ),
 
   triggerRerank: () =>
-    api.post<{ message: string; triggered_by: string }>("/learning/trigger-rerank"),
+    api.post<{ message: string; triggered_by: string }>("learning/trigger-rerank"),
 
   triggerCluster: () =>
-    api.post<{ message: string; triggered_by: string }>("/learning/trigger-cluster"),
+    api.post<{ message: string; triggered_by: string }>("learning/trigger-cluster"),
 };
