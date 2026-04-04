@@ -163,7 +163,7 @@ export interface ActivityItem {
 }
 
 export const dashboardApi = {
-  getMetrics: () => api.get<DashboardMetrics>("dashboard/metrics"),
+  getMetrics: () => api.get<DashboardMetrics>("dashboard/metrics/"),
 };
 
 // ── Patterns endpoints ─────────────────────────────────────────────────────
@@ -208,7 +208,7 @@ export const patternsApi = {
       if (v !== undefined && v !== "") params.set(k, String(v));
     });
     const queryString = params.toString();
-    return api.get<PatternListResponse>(`patterns${queryString ? `?${queryString}` : ""}`);
+    return api.get<PatternListResponse>(`patterns/${queryString ? `?${queryString}` : ""}`);
   },
 
   get: (id: string) => api.get<AdminPattern>(`patterns/${id}`),
@@ -264,7 +264,7 @@ export const usersApi = {
       Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     );
     const queryString = qs.toString();
-    return api.get<UserListResponse>(`users${queryString ? `?${queryString}` : ""}`);
+    return api.get<UserListResponse>(`users/${queryString ? `?${queryString}` : ""}`);
   },
 
   get: (userId: string) => api.get<AdminUser>(`users/${userId}`),
@@ -380,9 +380,9 @@ export interface LLMConfig {
 
 export const llmApi = {
   getCosts: (period: "today" | "7d" | "30d" = "30d") =>
-    api.get<LLMCosts>(`groq/costs?period=${period}`),
+    api.get<LLMCosts>(`groq/costs/?period=${period}`),
 
-  getConfig: () => api.get<LLMConfig>("groq/config"),
+  getConfig: () => api.get<LLMConfig>("groq/config/"),
 
   updateConfig: (data: Partial<Omit<LLMConfig, "groq_api_key_set">>) =>
     api.put<{ message: string; updated: string[] }>("groq/config", data),
@@ -419,7 +419,7 @@ export const auditApi = {
       Object.fromEntries(Object.entries(filters).map(([k, v]) => [k, String(v)])),
     );
     const queryString = qs.toString();
-    return api.get<AuditLogsResponse>(`audit/logs${queryString ? `?${queryString}` : ""}`);
+    return api.get<AuditLogsResponse>(`audit/logs/${queryString ? `?${queryString}` : ""}`);
   },
 
   getAlerts: () => api.get<unknown[]>("audit/alerts"),
@@ -437,7 +437,7 @@ export interface ConfigEntry {
 }
 
 export const configApi = {
-  getAll: () => api.get<ConfigEntry[]>("config"),
+  getAll: () => api.get<ConfigEntry[]>("config/"),
   get: (key: string) => api.get<ConfigEntry>(`config/${key}`),
   set: (key: string, value: unknown) => api.put(`config/${key}`, { value }),
   reload: () => api.post("config/reload"),
@@ -460,7 +460,7 @@ export interface Announcement {
 }
 
 export const announcementsApi = {
-  list: () => api.get<Announcement[]>("announcements"),
+  list: () => api.get<Announcement[]>("announcements/"),
   create: (data: Omit<Announcement, "id">) => api.post<Announcement>("announcements", data),
   update: (id: string, data: Partial<Announcement>) =>
     api.put<Announcement>(`announcements/${id}`, data),
@@ -505,7 +505,7 @@ export interface EmailStats {
 }
 
 export const emailApi = {
-  getTemplates: () => api.get<EmailTemplate[]>("email/templates"),
+  getTemplates: () => api.get<EmailTemplate[]>("email/templates/"),
 
   previewUrl: (
     template: string,
@@ -523,7 +523,7 @@ export const emailApi = {
   broadcast: (req: EmailBroadcastRequest) =>
     api.post<{ message: string; recipient_count: number; segment: string }>("email/broadcast", req),
 
-  getStats: () => api.get<EmailStats>("email/stats"),
+  getStats: () => api.get<EmailStats>("email/stats/"),
 };
 
 // ── Feedback Hub (admin) endpoints ────────────────────────────────────────────
@@ -568,7 +568,7 @@ export const feedbackHubApi = {
       Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     );
     const queryString = qs.toString();
-    return api.get<FeedbackListResponse>(`feedback-hub${queryString ? `?${queryString}` : ""}`);
+    return api.get<FeedbackListResponse>(`feedback-hub/${queryString ? `?${queryString}` : ""}`);
   },
 
   get: (id: string) => api.get<AdminFeedback>(`feedback-hub/${id}`),
@@ -592,11 +592,11 @@ export interface BillingRevenue {
 
 export const billingApi = {
   getRevenue: (period?: string) =>
-    api.get<BillingRevenue>(`billing/revenue${period ? `?period=${period}` : ""}`),
+    api.get<BillingRevenue>(`billing/revenue/${period ? `?period=${period}` : ""}`),
 
-  getTransactions: () => api.get<unknown[]>("billing/transactions"),
+  getTransactions: () => api.get<unknown[]>("billing/transactions/"),
 
-  getFailedPayments: () => api.get<unknown[]>("billing/failed"),
+  getFailedPayments: () => api.get<unknown[]>("billing/failed/"),
 
   sendRecoveryEmails: () => api.post("billing/recovery-emails"),
 };
@@ -744,12 +744,12 @@ export interface LearningJobsResponse {
 
 export const learningApi = {
   getStats: () =>
-    api.get<LearningStats>("learning/stats"),
+    api.get<LearningStats>("learning/stats/"),
 
   listCandidates: (status?: string, page = 1, pageSize = 50) => {
     const qs = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
     if (status) qs.set("status", status);
-    return api.get<CandidateListResponse>(`learning/candidates?${qs}`);
+    return api.get<CandidateListResponse>(`learning/candidates/?${qs}`);
   },
 
   getCandidate: (id: string) =>
@@ -773,12 +773,12 @@ export const learningApi = {
     api.post<GeneratePatternResult>(`learning/candidates/${id}/generate-pattern`),
 
   validateRegex: (id: string) =>
-    api.get<ValidateRegexResult>(`learning/candidates/${id}/validate-regex`),
+    api.get<ValidateRegexResult>(`learning/candidates/${id}/validate-regex/`),
 
   listJobs: (jobType?: string, page = 1, pageSize = 30) => {
     const qs = new URLSearchParams({ page: String(page), page_size: String(pageSize) });
     if (jobType) qs.set("type", jobType);
-    return api.get<LearningJobsResponse>(`learning/jobs?${qs}`);
+    return api.get<LearningJobsResponse>(`learning/jobs/?${qs}`);
   },
 
   triggerAutoPromote: () =>
