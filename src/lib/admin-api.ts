@@ -207,7 +207,8 @@ export const patternsApi = {
     Object.entries(filters).forEach(([k, v]) => {
       if (v !== undefined && v !== "") params.set(k, String(v));
     });
-    return api.get<PatternListResponse>(`patterns?${params}`);
+    const queryString = params.toString();
+    return api.get<PatternListResponse>(`patterns${queryString ? `?${queryString}` : ""}`);
   },
 
   get: (id: string) => api.get<AdminPattern>(`patterns/${id}`),
@@ -262,7 +263,8 @@ export const usersApi = {
     const qs = new URLSearchParams(
       Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     );
-    return api.get<UserListResponse>(`users?${qs}`);
+    const queryString = qs.toString();
+    return api.get<UserListResponse>(`users${queryString ? `?${queryString}` : ""}`);
   },
 
   get: (userId: string) => api.get<AdminUser>(`users/${userId}`),
@@ -416,7 +418,8 @@ export const auditApi = {
     const qs = new URLSearchParams(
       Object.fromEntries(Object.entries(filters).map(([k, v]) => [k, String(v)])),
     );
-    return api.get<AuditLogsResponse>(`audit/logs?${qs}`);
+    const queryString = qs.toString();
+    return api.get<AuditLogsResponse>(`audit/logs${queryString ? `?${queryString}` : ""}`);
   },
 
   getAlerts: () => api.get<unknown[]>("audit/alerts"),
@@ -564,7 +567,8 @@ export const feedbackHubApi = {
     const qs = new URLSearchParams(
       Object.fromEntries(Object.entries(params).map(([k, v]) => [k, String(v)])),
     );
-    return api.get<FeedbackListResponse>(`feedback-hub?${qs}`);
+    const queryString = qs.toString();
+    return api.get<FeedbackListResponse>(`feedback-hub${queryString ? `?${queryString}` : ""}`);
   },
 
   get: (id: string) => api.get<AdminFeedback>(`feedback-hub/${id}`),
