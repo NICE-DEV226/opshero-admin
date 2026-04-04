@@ -3,7 +3,7 @@
  * Automatically attaches admin_token as Authorization Bearer header.
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const API_URL = (process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000").replace(/\/$/, "");
 
 /** Read a cookie value by name (client-side only). */
 function _getCookie(name: string): string | null {
@@ -33,7 +33,9 @@ async function adminFetch<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const url = `${API_URL}/admin${path}`;
+  // Remove leading slash from path if present to avoid double slashes
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  const url = `${API_URL}/admin/${cleanPath}`;
 
   // Attach the token as Authorization header so it works cross-origin
   // (dev: frontend :3001 → backend :8000).
