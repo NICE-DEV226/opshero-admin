@@ -1,13 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <defs>
-    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.9" />
-      <stop offset="100%" style="stop-color:#ec4899;stop-opacity:0.7" />
-    </linearGradient>
-  </defs>
-  <!-- Background rounded square -->
-  <rect x="10" y="10" width="80" height="80" rx="20" fill="url(#grad)"/>
-  <!-- Shield icon for admin -->
-  <path d="M 50 25 L 65 30 L 65 50 C 65 60 60 68 50 72 C 40 68 35 60 35 50 L 35 30 Z" stroke="white" stroke-width="3" stroke-linejoin="round" fill="none"/>
-  <path d="M 45 50 L 48 53 L 55 45" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Background: dark rounded square — same style as dashboard -->
+  <rect width="32" height="32" rx="7" fill="#040811"/>
+
+  <!-- Amber tint background (admin color) -->
+  <rect width="32" height="32" rx="7" fill="#ffb020" fill-opacity="0.10"/>
+
+  <!-- Amber border -->
+  <rect x="0.5" y="0.5" width="31" height="31" rx="6.5" stroke="#ffb020" stroke-opacity="0.25"/>
+
+  <!-- Shield icon for admin — same Terminal style but shield -->
+  <!-- Shield outline -->
+  <path
+    d="M16 5 L24 8.5 L24 16 C24 21 20.5 25 16 27 C11.5 25 8 21 8 16 L8 8.5 Z"
+    stroke="#ffb020"
+    stroke-width="1.8"
+    stroke-linejoin="round"
+    fill="#ffb020"
+    fill-opacity="0.12"
+  />
+  <!-- Checkmark inside shield -->
+  <polyline
+    points="12,16 15,19 20,13"
+    stroke="#ffb020"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
 </svg>
